@@ -1,4 +1,3 @@
-
 const nodemailer = require("nodemailer");
 
 const sendOTP = async (email, otp) => {

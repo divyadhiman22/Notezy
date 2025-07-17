@@ -1,4 +1,3 @@
-//server.js
 require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
@@ -12,7 +11,7 @@ const connectDb = require("./utils/db");
 const errorMiddleware = require('./middlewares/error-middleware');
 const path = require("path");
 
-//let's tackle cors
+
 const corsOptions = {
     origin:"http://localhost:5173",
     methods:"GET, POST, PUT, DELETE, PATCH, HEAD",
@@ -26,7 +25,7 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // for auth routers
-app.use("/api/auth", authRouter);//we have used this for navigation
+app.use("/api/auth", authRouter);
 
 // for contact router
 app.use("/api/form", contactRouter);
@@ -43,8 +42,6 @@ app.use("/api/user", profileRouter);
 // using error middleware
 app.use(errorMiddleware);
 
-// using connectDb function to connect database
-// making our custom port and agr hamara connection database ke sath perfectly hota hai tabhi server port run kro
 // CONNECTING DATABASE WITH SERVER
 const PORT = 5000;
 connectDb().then(()=>{

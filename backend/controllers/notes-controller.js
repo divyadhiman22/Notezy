@@ -6,7 +6,6 @@ const createNote = async (req, res, next) => {
     try {
         const { title, content, category, date } = req.body;
 
-        // get user id from auth middleware
         const userId = req.user._id; 
 
         const newNote = new Note({ 
@@ -92,12 +91,10 @@ const summarizeNote = async (req, res, next) => {
     if (!content) {
       return res.status(400).json({ message: "Content is required to summarize." });
     }
-
-    // Hugging Face summarization inference API ( with bart-large-cnn)
     const API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
 
 
-    const HF_API_TOKEN = process.env.HF_API_TOKEN || ""; // store in .env
+    const HF_API_TOKEN = process.env.HF_API_TOKEN || ""; 
 
     const response = await axios.post(
       API_URL,

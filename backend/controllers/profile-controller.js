@@ -1,9 +1,9 @@
 const User = require("../models/user-model");
 
-// Get current logged-in user's profile
+
 const getLoggedInUser = async (req, res, next) => {
   try {
-    const id = req.user._id; // From the auth middleware
+    const id = req.user._id; 
     const user = await User.findOne({ _id: id }, { password: 0 });
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -14,11 +14,10 @@ const getLoggedInUser = async (req, res, next) => {
   }
 };
 
-// Get profile by ID (READ)
 const getProfileById = async (req, res, next) => {
   try {
     const id = req.params.id;
-    const user = await User.findOne({ _id: id }, { password: 0 }); // exclude password
+    const user = await User.findOne({ _id: id }, { password: 0 }); 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -28,7 +27,7 @@ const getProfileById = async (req, res, next) => {
   }
 };
 
-// Update profile by ID (UPDATE)
+
 const updateProfileById = async (req, res, next) => {
   try {
     const id = req.params.id;
@@ -40,7 +39,7 @@ const updateProfileById = async (req, res, next) => {
   }
 };
 
-// Upload profile picture by ID (POST)
+
 const uploadProfilePictureById = async (req, res, next) => {
   try {
     const id = req.params.id;

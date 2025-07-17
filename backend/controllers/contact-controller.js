@@ -1,6 +1,5 @@
 const Contact = require("../models/contact-model")
 
-//CONTACT LOGIC
 const contactForm = async (req, res) =>{
     try {
         const response = req.body;

@@ -29,19 +29,17 @@ const register = async (req, res, next) => {
   try {
     const { username, email, phone, password } = req.body;
 
-    // Check if user already exists
     const userExist = await User.findOne({ email });
     if (userExist) {
       return res.status(400).json({ message: "Email already exists" });
     }
 
-    // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000);
 
-    // Save OTP
+
     await OTPModel.create({ email, otp });
 
-    // Send OTP via Ethereal
+ 
     await sendOTP(email, otp);
 
     res.status(200).json({ message: "OTP sent to your email" });
@@ -64,7 +62,6 @@ const verifyOTP = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
-    // const hashedPassword = await bcrypt.hash(password, 10);
 
     const userCreated = await User.create({
       username,
@@ -73,7 +70,7 @@ const verifyOTP = async (req, res, next) => {
       password,
     });
 
-    // Remove used OTP
+
     await OTPModel.deleteOne({ email });
 
     res.status(200).json({
@@ -138,20 +135,16 @@ const googleLogin = async (req, res, next) => {
 const login = async (req,res) => {
     try {
         
-        const {email, password} = req.body;//requesting the json body to get the email and password
+        const {email, password} = req.body;
         
-        //if the user exists then find the email
          const userExist = await User.findOne({ email });
 
-        //  if the email has not found 
         if(!userExist){
             return res.status(400).json({msg:"Invalid Credentials"})
         }
 
-        // if user exists then do the password comparison
         const isPasswordValid = await bcrypt.compare(password, userExist.password);
-        
-        // if user is found valid
+
         if(isPasswordValid){
         res.status(200).json({
             msg: "Login Successfull",
@@ -164,7 +157,6 @@ const login = async (req,res) => {
 
     } catch (error) {
         res.status(500).json("Internal Server Error");
-        // next(error) ; 
     }
 };
 
@@ -192,25 +184,22 @@ const forgotPassword = async (req, res, next) => {
   try {
     const { email } = req.body;
 
-    // Check if user exists
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: "User with this email does not exist" });
     }
 
-    // Generate token with 15 mins expiration
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "15m",
     });
 
     const resetLink = `http://localhost:5173/reset-password/${token}`;
 
-    // Configure transporter (reuse what you did in sendOTP)
     const transporter = nodemailer.createTransport({
       service: "Gmail",
       auth: {
-        user: process.env.GMAIL_USER, // your Gmail address
-        pass: process.env.GMAIL_PASS, // your Gmail App Password
+        user: process.env.GMAIL_USER, 
+        pass: process.env.GMAIL_PASS, 
       },
     });
 
@@ -243,7 +232,6 @@ const resetPassword = async (req, res, next) => {
     const { token } = req.params;
     const { newPassword } = req.body;
 
-    // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
 
     const user = await User.findById(decoded.userId);
@@ -251,7 +239,6 @@ const resetPassword = async (req, res, next) => {
       return res.status(404).json({ message: "User not found or token expired" });
     }
 
-    // Set new password (hashed automatically if your model hashes before save)
     user.password = newPassword;
     await user.save();
 
