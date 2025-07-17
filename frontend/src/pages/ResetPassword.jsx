@@ -7,11 +7,13 @@ const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState("");
   const { token } = useParams();
   const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const handleReset = async (e) => {
     e.preventDefault();
+
     try {
-      const res = await fetch(`http://localhost:5000/api/auth/reset-password/${token}`, {
+      const res = await fetch(`${backendUrl}/api/auth/reset-password/${token}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newPassword }),

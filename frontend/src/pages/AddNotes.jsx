@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { HiSparkles } from "react-icons/hi2";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const AddNotes = () => {
   const { authorizationToken, loading } = useAuth();
   const [note, setNote] = useState({
@@ -33,7 +35,7 @@ const AddNotes = () => {
 
     setIsSummarizing(true);
     try {
-      const response = await fetch("http://localhost:5000/api/notes/summarize", {
+      const response = await fetch(`${BACKEND_URL}/api/notes/summarize`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -60,7 +62,7 @@ const AddNotes = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/notes/add", {
+      const response = await fetch(`${BACKEND_URL}/api/notes/add`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -84,7 +86,6 @@ const AddNotes = () => {
       console.error("Add note error:", error);
     }
   };
-
 
   if (loading) {
     return (

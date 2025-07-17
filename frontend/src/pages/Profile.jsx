@@ -12,10 +12,11 @@ const Profile = () => {
   const [editMode, setEditMode] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
 
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const fetchProfile = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/user/profile/me`, {
+      const res = await fetch(`${backendURL}/api/user/profile/me`, {
         method: "GET",
         headers: {
           Authorization: authorizationToken,
@@ -39,7 +40,6 @@ const Profile = () => {
     }
   }, [authLoading, userId]);
 
-
   const handleUpload = async (e) => {
     e.preventDefault();
     if (!imageFile || !userId) return;
@@ -48,7 +48,7 @@ const Profile = () => {
     formData.append("profilePicture", imageFile);
 
     try {
-      const res = await fetch(`http://localhost:5000/api/user/profile/upload-picture/${userId}`, {
+      const res = await fetch(`${backendURL}/api/user/profile/upload-picture/${userId}`, {
         method: "POST",
         headers: {
           Authorization: authorizationToken,
@@ -69,12 +69,11 @@ const Profile = () => {
     }
   };
 
-
   const handleUpdate = async () => {
     if (!userId) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/api/user/profile/update/${userId}`, {
+      const res = await fetch(`${backendURL}/api/user/profile/update/${userId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -104,7 +103,6 @@ const Profile = () => {
     setEditMode(false);
   };
 
-
   if (authLoading || profileLoading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center text-lg text-white bg-[#0a0a23]">
@@ -123,7 +121,7 @@ const Profile = () => {
             <div className="relative">
               {user.profilePicture ? (
                 <img
-                  src={`http://localhost:5000/${user.profilePicture}`}
+                  src={`${backendURL}/${user.profilePicture}`}
                   alt="Profile"
                   className="w-40 h-40 rounded-full border-4 border-purple-500 object-cover"
                 />

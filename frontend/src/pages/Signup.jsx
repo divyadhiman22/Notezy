@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+
 const Signup = () => {
   const [user, setUser] = useState({
     username: "",
@@ -11,10 +12,10 @@ const Signup = () => {
   });
 
   const [errors, setErrors] = useState({});
-
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -32,10 +33,10 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors({}); 
+    setErrors({});
 
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/register`, {
+      const response = await fetch(`${backendUrl}/api/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -148,7 +149,11 @@ const Signup = () => {
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-500"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
-                {showPassword ? <AiFillEye size={24} /> : <AiFillEyeInvisible size={24} />}
+                {showPassword ? (
+                  <AiFillEye size={24} />
+                ) : (
+                  <AiFillEyeInvisible size={24} />
+                )}
               </button>
               {errors.password && (
                 <p className="text-red-500 text-sm mt-1">{errors.password}</p>

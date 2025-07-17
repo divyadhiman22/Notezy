@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../store/auth";
@@ -6,6 +5,8 @@ import { toast } from "react-toastify";
 import { auth, provider, signInWithPopup } from "../firebase";
 import { FcGoogle } from "react-icons/fc";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const Login = () => {
   const [user, setUser] = useState({
@@ -33,7 +34,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:5000/api/auth/login`, {
+      const response = await fetch(`${BACKEND_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -67,7 +68,7 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const token = await result.user.getIdToken();
 
-      const response = await fetch("http://localhost:5000/api/auth/google-login", {
+      const response = await fetch(`${BACKEND_URL}/api/auth/google-login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

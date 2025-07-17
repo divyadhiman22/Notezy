@@ -1,5 +1,8 @@
+/* eslint-disable no-unused-vars */
 import { useState } from "react";
 import { toast } from "react-toastify";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
@@ -8,7 +11,7 @@ const ForgotPassword = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/forgot-password", {
+      const res = await fetch(`${BACKEND_URL}/api/auth/forgot-password`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
@@ -21,7 +24,6 @@ const ForgotPassword = () => {
       } else {
         toast.error(data.message);
       }
-    // eslint-disable-next-line no-unused-vars
     } catch (err) {
       toast.error("Something went wrong.");
     }

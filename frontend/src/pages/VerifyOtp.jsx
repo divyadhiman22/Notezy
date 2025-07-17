@@ -8,6 +8,8 @@ const VerifyOTP = () => {
   const location = useLocation();
   const user = location.state?.user;
 
+  const backend_url = import.meta.env.VITE_BACKEND_URL;
+
   if (!user) {
     navigate("/signup");
     return null;
@@ -17,7 +19,7 @@ const VerifyOTP = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/verify-otp", {
+      const response = await fetch(`${backend_url}/api/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...user, otp }),
@@ -27,13 +29,13 @@ const VerifyOTP = () => {
 
       if (response.ok) {
         toast.success("Registration successful");
-        navigate("/login"); 
+        navigate("/login");
       } else {
         toast.error(data.message || "Invalid OTP");
       }
     } catch (error) {
       toast.error("Something went wrong. Please try again.");
-      console.log("OTP verification error", error);
+      console.error("OTP verification error:", error);
     }
   };
 

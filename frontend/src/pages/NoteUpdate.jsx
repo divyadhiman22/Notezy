@@ -7,11 +7,13 @@ const NoteUpdate = () => {
     title: "",
     content: "",
     category: "",
-    date: "",          
+    date: "",
   });
 
   const { authorizationToken } = useAuth();
   const { id } = useParams();
+
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const ddmmyyyyToISO = (d) => {
     const [dd, mm, yyyy] = d.split("-");
@@ -23,16 +25,12 @@ const NoteUpdate = () => {
     return `${dd}-${mm}-${yyyy}`;
   };
 
-
   useEffect(() => {
     const getSingleNote = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:5000/api/notes/note/${id}`,
-          {
-            headers: { Authorization: authorizationToken },
-          }
-        );
+        const res = await fetch(`${backendURL}/api/notes/note/${id}`, {
+          headers: { Authorization: authorizationToken },
+        });
         const data = await res.json();
 
         const n = data.note ? data.note : data;
@@ -49,8 +47,7 @@ const NoteUpdate = () => {
     };
 
     getSingleNote();
-  }, [authorizationToken, id]);
-
+  }, [authorizationToken, id, backendURL]);
 
   const handleInput = (e) => {
     const { name, value } = e.target;
@@ -61,21 +58,18 @@ const NoteUpdate = () => {
     e.preventDefault();
     const payload = {
       ...note,
-      date: isoToDDMMYYYY(note.date), 
+      date: isoToDDMMYYYY(note.date),
     };
 
     try {
-      const res = await fetch(
-        `http://localhost:5000/api/notes/update/${id}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: authorizationToken,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch(`${backendURL}/api/notes/update/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: authorizationToken,
+        },
+        body: JSON.stringify(payload),
+      });
 
       if (res.ok) {
         alert("Note updated successfully!");

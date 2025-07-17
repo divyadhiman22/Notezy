@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "../store/auth";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Contact = () => {
   const { user, loading } = useAuth();
 
@@ -9,7 +11,6 @@ const Contact = () => {
     email: '',
     message: '',
   });
-
 
   useEffect(() => {
     if (!loading && user) {
@@ -32,7 +33,7 @@ const Contact = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/form/contact', {
+      const response = await fetch(`${BACKEND_URL}/api/form/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(contact),
@@ -50,7 +51,6 @@ const Contact = () => {
       console.log(error);
     }
   };
-
 
   if (loading) {
     return (
@@ -107,7 +107,6 @@ const Contact = () => {
             </button>
           </form>
         </div>
-
 
         <div className="md:w-1/2 w-full p-8 flex justify-center items-center">
           <img

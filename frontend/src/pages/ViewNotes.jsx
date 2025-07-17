@@ -8,9 +8,11 @@ const ViewNotes = () => {
   const { authorizationToken } = useAuth();
   const [notes, setNotes] = useState([]);
 
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
   const fetchNotes = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/notes/view", {
+      const response = await fetch(`${BACKEND_URL}/api/notes/view`, {
         method: "GET",
         headers: {
           Authorization: authorizationToken,
@@ -33,7 +35,7 @@ const ViewNotes = () => {
     if (!window.confirm("Are you sure you want to delete this note?")) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/notes/delete/${id}`, {
+      const response = await fetch(`${BACKEND_URL}/api/notes/delete/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: authorizationToken,
