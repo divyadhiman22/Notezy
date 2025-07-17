@@ -9,6 +9,8 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const navLinkClass = ({ isActive }) =>
     `relative font-medium transition duration-200 text-white 
      after:absolute after:-bottom-1 after:left-0 after:h-[2px] after:w-0 
@@ -37,7 +39,7 @@ const Navbar = () => {
 
   const avatarUrl =
     user?.profilePicture && user.profilePicture.trim() !== ""
-      ? `http://localhost:5000/${user.profilePicture}`
+      ? `${backendUrl}/${user.profilePicture}`
       : "https://cdn-icons-png.flaticon.com/512/12225/12225935.png";
 
   return (
@@ -45,7 +47,7 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <NavLink to="/" className="text-white font-bold text-xl">
-           Notezy
+            Notezy
           </NavLink>
 
           <div className="md:hidden">
@@ -153,20 +155,12 @@ const Navbar = () => {
               </NavLink>
             </li>
             <li>
-              <NavLink
-                to="/services"
-                onClick={toggleMenu}
-                className="block text-white"
-              >
+              <NavLink to="/services" onClick={toggleMenu} className="block text-white">
                 Services
               </NavLink>
             </li>
             <li>
-              <NavLink
-                to="/contact"
-                onClick={toggleMenu}
-                className="block text-white"
-              >
+              <NavLink to="/contact" onClick={toggleMenu} className="block text-white">
                 Contact
               </NavLink>
             </li>
@@ -174,29 +168,17 @@ const Navbar = () => {
             {isLoggedIn ? (
               <>
                 <li>
-                  <NavLink
-                    to="/notes"
-                    onClick={toggleMenu}
-                    className="block text-white"
-                  >
+                  <NavLink to="/notes" onClick={toggleMenu} className="block text-white">
                     My Notes
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                    to="/profile"
-                    onClick={toggleMenu}
-                    className="block text-white"
-                  >
+                  <NavLink to="/profile" onClick={toggleMenu} className="block text-white">
                     Profile
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink
-                    to="/logout"
-                    onClick={toggleMenu}
-                    className="block text-red-400"
-                  >
+                  <NavLink to="/logout" onClick={toggleMenu} className="block text-red-400">
                     Logout
                   </NavLink>
                 </li>

@@ -13,16 +13,18 @@ const NotesLayout = () => {
 
   const fetchNotes = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/notes/view", {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/notes/view`, {
         method: "GET",
         headers: {
           Authorization: authorizationToken,
         },
       });
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || "Failed to fetch notes");
       }
+
       const data = await response.json();
       setNotes(data);
 
@@ -38,9 +40,7 @@ const NotesLayout = () => {
 
   useEffect(() => {
     fetchNotes();
-
   }, []);
-
 
   const filteredNotes = selectedCategory
     ? notes.filter((note) => note.category === selectedCategory)
@@ -52,13 +52,11 @@ const NotesLayout = () => {
     }
   }, [location.pathname]);
 
-
   useEffect(() => {
     if (
       selectedCategory !== null &&
       (location.pathname === "/notes/add" || location.pathname === "/notes/view")
     ) {
-     
       setSelectedCategory(null);
       navigate("/notes");
     }
