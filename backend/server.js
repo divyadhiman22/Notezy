@@ -1,51 +1,60 @@
 require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
-const app = express();
-const authRouter = require("./router/auth-router")
-const contactRouter = require("./router/contact-router")
-const serviceRouter = require("./router/service-router")
-const notesRouter = require("./router/notes-router")
-const profileRouter = require("./router/profile-router")
-const connectDb = require("./utils/db");
-const errorMiddleware = require('./middlewares/error-middleware');
 const path = require("path");
 
+const app = express();
+
+const authRouter = require("./router/auth-router");
+const contactRouter = require("./router/contact-router");
+const serviceRouter = require("./router/service-router");
+const notesRouter = require("./router/notes-router");
+const profileRouter = require("./router/profile-router");
+
+
+const connectDb = require("./utils/db");
+const errorMiddleware = require('./middlewares/error-middleware');
+
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://notezy-sigma.vercel.app"
+];
 
 const corsOptions = {
-    origin:"http://localhost:5173",
-    methods:"GET, POST, PUT, DELETE, PATCH, HEAD",
-    credentials: true,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: "GET, POST, PUT, DELETE, PATCH, HEAD",
+  credentials: true,
 };
+
+
 app.use(cors(corsOptions));
-  
-// using express middleware
+
+
 app.use(express.json());
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// for auth routers
 app.use("/api/auth", authRouter);
-
-// for contact router
 app.use("/api/form", contactRouter);
-
-// for service router
 app.use("/api/data", serviceRouter);
-
-// for notes route
 app.use("/api/notes", notesRouter);
-
-// for profile route
 app.use("/api/user", profileRouter);
 
-// using error middleware
+
 app.use(errorMiddleware);
 
-// CONNECTING DATABASE WITH SERVER
-const PORT = 5000;
-connectDb().then(()=>{
-    app.listen(PORT, ()=>{
-        console.log(`Server is running at port: ${PORT}`);
-    });
+
+const PORT = process.env.PORT || 5000;
+
+connectDb().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server is running at port: ${PORT}`);
+  });
 });
