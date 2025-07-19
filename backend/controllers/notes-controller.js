@@ -83,43 +83,48 @@ const deleteNoteById = async (req, res, next) => {
 };
 
 
-// Summarize note content using Hugging Face API
+// Summarize note content with AI
 const summarizeNote = async (req, res, next) => {
   try {
     const { content } = req.body;
 
-    if (!content) {
-      return res.status(400).json({ message: "Content is required to summarize." });
+    if (!content || content.trim().length < 20) {
+      return res.status(400).json({ message: "Content is too short to summarize." });
     }
-    const API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-cnn";
 
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-    const HF_API_TOKEN = process.env.HF_API_TOKEN || ""; 
+    const prompt = `Summarize the following text:\n\n${content}`;
 
     const response = await axios.post(
       API_URL,
-      { inputs: content },
+      {
+        contents: [
+          {
+            parts: [{ text: prompt }],
+          },
+        ],
+      },
       {
         headers: {
-          Authorization: `Bearer ${HF_API_TOKEN}`,
           "Content-Type": "application/json",
         },
       }
     );
 
-    if (!response.data || response.data.error) {
-      return res.status(500).json({ message: "Failed to summarize content" });
-    }
+    const summary = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    const summary = response.data[0]?.generated_text || "No summary available";
+    if (!summary) {
+      return res.status(500).json({ message: "No summary available." });
+    }
 
     res.status(200).json({ summary });
   } catch (error) {
-    console.error("Summarize error:", error);
+    console.error("Summarize error:", error?.response?.data || error.message);
     res.status(500).json({ message: "Error during summarization" });
   }
 };
-
 
 
 module.exports = {
