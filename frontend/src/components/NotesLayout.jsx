@@ -47,7 +47,7 @@ const NotesLayout = () => {
     : [];
 
   useEffect(() => {
-    if (location.pathname === "/notes/add" || location.pathname === "/notes/view") {
+    if (location.pathname === "/notes/add" || location.pathname === "/notes/view" || location.pathname === "/notes/generate") {
       setSelectedCategory(null);
     }
   }, [location.pathname]);
@@ -127,6 +127,20 @@ const NotesLayout = () => {
                   📓 View Notes
                 </NavLink>
               </li>
+              <li>
+                <NavLink
+                  to="/notes/generate"
+                  className={({ isActive }) =>
+                    `px-6 py-3 rounded-xl transition duration-300 font-semibold flex items-center gap-2 shadow-md ${
+                      isActive
+                        ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white scale-105"
+                        : "bg-[#1f1f3a] text-purple-300 hover:bg-purple-600 hover:text-white"
+                    }`
+                  }
+                >
+                  🧠 Generate Quiz
+                </NavLink>
+              </li>
             </ul>
           </nav>
 
@@ -147,10 +161,7 @@ const NotesLayout = () => {
                 ) : (
                   <ul className="space-y-3">
                     {filteredNotes.map((note) => (
-                      <li
-                        key={note._id}
-                        className="bg-purple-700 rounded-md p-4 shadow-md"
-                      >
+                      <li key={note._id} className="bg-purple-700 rounded-md p-4 shadow-md">
                         <h4 className="font-semibold text-white">{note.title}</h4>
                         <p className="text-purple-200 mt-1">{note.content}</p>
                       </li>

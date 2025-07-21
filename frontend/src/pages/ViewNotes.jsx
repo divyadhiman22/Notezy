@@ -3,10 +3,18 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../store/auth";
 import { Link } from "react-router-dom";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import PopUpAlert from "../components/PopUpAlert";
 
 const ViewNotes = () => {
   const { authorizationToken } = useAuth();
   const [notes, setNotes] = useState([]);
+  const [popup, setPopup] = useState({
+    show: false,
+    message: "",
+    title: "",
+    onConfirm: null,
+    onClose: null,
+  });
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -27,12 +35,28 @@ const ViewNotes = () => {
       const data = await response.json();
       setNotes(data);
     } catch (error) {
-      console.error("Fetch notes error:", error);
+      setPopup({
+        show: true,
+        message: error.message,
+        title: "Fetch Error",
+        onConfirm: null,
+        onClose: () => setPopup({ ...popup, show: false }),
+      });
     }
   };
 
-  const deleteNote = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this note?")) return;
+  const confirmDeleteNote = (id) => {
+    setPopup({
+      show: true,
+      title: "Delete Confirmation",
+      message: "Are you sure you want to delete this note?",
+      onConfirm: () => handleDelete(id),
+      onClose: () => setPopup({ ...popup, show: false }),
+    });
+  };
+
+  const handleDelete = async (id) => {
+    setPopup({ ...popup, show: false });
 
     try {
       const response = await fetch(`${BACKEND_URL}/api/notes/delete/${id}`, {
@@ -49,7 +73,13 @@ const ViewNotes = () => {
 
       fetchNotes();
     } catch (error) {
-      alert(error.message);
+      setPopup({
+        show: true,
+        title: "Delete Failed",
+        message: error.message,
+        onConfirm: null,
+        onClose: () => setPopup({ ...popup, show: false }),
+      });
     }
   };
 
@@ -72,14 +102,17 @@ const ViewNotes = () => {
               key={_id}
               className="bg-[#1e293b] rounded-2xl p-6 shadow-lg hover:shadow-2xl transition duration-300 border border-slate-700"
             >
-              <h2 className="text-2xl font-semibold text-indigo-300 mb-2">{title}</h2>
+              <h2 className="text-2xl font-semibold text-indigo-300 mb-2">
+                {title}
+              </h2>
               <p className="text-gray-300 text-sm mb-4 whitespace-pre-wrap">
                 {content.length > 200 ? content.slice(0, 200) + "..." : content}
               </p>
 
               <div className="text-sm text-gray-400 mb-5 space-y-1">
                 <p>
-                  <span className="font-medium text-indigo-400">Category:</span> {category}
+                  <span className="font-medium text-indigo-400">Category:</span>{" "}
+                  {category}
                 </p>
                 <p>
                   <span className="font-medium text-indigo-400">Date:</span>{" "}
@@ -87,23 +120,33 @@ const ViewNotes = () => {
                 </p>
               </div>
 
-              <div className="flex justify-end gap-3">
+              <div className="flex justify-end gap-3 mt-4">
                 <Link
                   to={`/notes/note/${_id}/edit`}
-                  className="bg-indigo-600 text-white px-4 py-1.5 rounded-full flex items-center gap-2 font-medium text-sm hover:bg-indigo-500 hover:scale-105 transition-all shadow-md"
+                  className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white px-5 py-2 rounded-xl flex items-center gap-2 font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:brightness-110"
                 >
-                  <FaEdit className="text-sm" /> Edit
+                  <FaEdit className="text-base" /> Edit
                 </Link>
+
                 <button
-                  onClick={() => deleteNote(_id)}
-                  className="bg-rose-600 text-white px-4 py-1.5 rounded-full flex items-center gap-2 font-medium text-sm hover:bg-rose-500 hover:scale-105 transition-all shadow-md"
+                  onClick={() => confirmDeleteNote(_id)}
+                  className="bg-gradient-to-r from-rose-500 via-red-500 to-orange-500 text-white px-5 py-2 rounded-xl flex items-center gap-2 font-semibold text-sm shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:brightness-110"
                 >
-                  <FaTrash className="text-sm" /> Delete
+                  <FaTrash className="text-base" /> Delete
                 </button>
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {popup.show && (
+        <PopUpAlert
+          title={popup.title}
+          message={popup.message}
+          onClose={popup.onClose}
+          onConfirm={popup.onConfirm}
+        />
       )}
     </div>
   );

@@ -1,6 +1,6 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { useAuth } from "../store/auth";
+import PopUpAlert from "../components/PopUpAlert";
 
 const Profile = () => {
   const { authorizationToken, user: authUser, loading: authLoading } = useAuth();
@@ -11,6 +11,13 @@ const Profile = () => {
   const [imageFile, setImageFile] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [profileLoading, setProfileLoading] = useState(true);
+  const [popup, setPopup] = useState({
+    show: false,
+    title: "",
+    message: "",
+    onClose: () => setPopup({ ...popup, show: false }),
+    onConfirm: () => setPopup({ ...popup, show: false }),
+  });
 
   const backendURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -57,15 +64,33 @@ const Profile = () => {
       });
 
       if (res.ok) {
-        alert("Profile picture updated!");
-        fetchProfile();
-        setImageFile(null);
+        setPopup({
+          show: true,
+          title: "Success",
+          message: "Profile picture updated!",
+          onClose: () => {
+            setPopup({ ...popup, show: false });
+            fetchProfile();
+            setImageFile(null);
+          },
+          onConfirm: () => {
+            setPopup({ ...popup, show: false });
+            fetchProfile();
+            setImageFile(null);
+          },
+        });
       } else {
         const err = await res.json();
-        alert(err.message || "Upload failed");
+        throw new Error(err.message || "Upload failed");
       }
     } catch (error) {
-      alert("Upload error:", error.message || error);
+      setPopup({
+        show: true,
+        title: "Upload Error",
+        message: error.message || "Something went wrong during upload.",
+        onClose: () => setPopup({ ...popup, show: false }),
+        onConfirm: () => setPopup({ ...popup, show: false }),
+      });
     }
   };
 
@@ -86,15 +111,33 @@ const Profile = () => {
       });
 
       if (res.ok) {
-        alert("Profile updated!");
-        setEditMode(false);
-        fetchProfile();
+        setPopup({
+          show: true,
+          title: "Success",
+          message: "Profile updated!",
+          onClose: () => {
+            setPopup({ ...popup, show: false });
+            setEditMode(false);
+            fetchProfile();
+          },
+          onConfirm: () => {
+            setPopup({ ...popup, show: false });
+            setEditMode(false);
+            fetchProfile();
+          },
+        });
       } else {
         const err = await res.json();
-        alert(err.message || "Update failed");
+        throw new Error(err.message || "Update failed");
       }
     } catch (error) {
-      alert("Update error:", error.message || error);
+      setPopup({
+        show: true,
+        title: "Update Error",
+        message: error.message || "Something went wrong during update.",
+        onClose: () => setPopup({ ...popup, show: false }),
+        onConfirm: () => setPopup({ ...popup, show: false }),
+      });
     }
   };
 
@@ -223,6 +266,15 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {popup.show && (
+        <PopUpAlert
+          title={popup.title}
+          message={popup.message}
+          onClose={popup.onClose}
+          onConfirm={popup.onConfirm}
+        />
+      )}
     </div>
   );
 };

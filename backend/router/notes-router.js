@@ -16,4 +16,7 @@ router.route("/delete/:id").delete(authMiddleware, notesController.deleteNoteByI
 
 router.route("/summarize").post(authMiddleware, notesController.summarizeNote);
 
+router.route("/generate-quiz").post(authMiddleware, notesController.generateQuizAndSummary);
+
+
 module.exports = router;

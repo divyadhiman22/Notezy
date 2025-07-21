@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useAuth } from "../store/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -68,7 +68,10 @@ const AddNotes = () => {
           "Content-Type": "application/json",
           Authorization: authorizationToken,
         },
-        body: JSON.stringify(note),
+        body: JSON.stringify({
+          ...note,
+          summary: summary?.trim() || "",
+        }),
       });
 
       const data = await response.json();

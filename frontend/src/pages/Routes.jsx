@@ -17,6 +17,7 @@ import ResetPassword from "./ResetPassword";
 import Signup from "./Signup";
 import Services from "./Services";
 import NotesLayout from "../components/NotesLayout";
+import GenerateQuiz from "./GenerateQuiz";
 
 const Routess = () => {
   return (
@@ -47,6 +48,7 @@ const Routess = () => {
         >
           <Route path="add" element={<AddNotes />} />
           <Route path="view" element={<ViewNotes />} />
+          <Route path="generate" element={<GenerateQuiz/>} />
           <Route path="note/:id/edit" element={<NoteUpdate />} />
         </Route>
       </Routes>

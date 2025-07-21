@@ -3,25 +3,27 @@ const axios = require("axios");
 
 // CREATE a new note
 const createNote = async (req, res, next) => {
-    try {
-        const { title, content, category, date } = req.body;
+  try {
+    const { title, content, category, date, summary } = req.body;
 
-        const userId = req.user._id; 
+    const userId = req.user._id;
 
-        const newNote = new Note({ 
-            user: userId,
-            title, 
-            content, 
-            category, 
-            date 
-        });
-        await newNote.save();
+    const newNote = new Note({
+      user: userId,
+      title,
+      content: summary?.trim() ? summary : content, // Use AI summary if exists
+      category,
+      date,
+    });
 
-        res.status(201).json({ message: "Note created successfully", note: newNote });
-    } catch (error) {
-        next(error);
-    }
+    await newNote.save();
+
+    res.status(201).json({ message: "Note created successfully", note: newNote });
+  } catch (error) {
+    next(error);
+  }
 };
+
 
 
 // READ all notes
@@ -126,6 +128,50 @@ const summarizeNote = async (req, res, next) => {
   }
 };
 
+// Generating quiz with AI
+const generateQuizAndSummary = async (req, res, next) => {
+  try {
+    const { content, noteId } = req.body;
+
+    if (!content || content.trim().length < 20) {
+      return res.status(400).json({ message: "Note content is too short." });
+    }
+
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+    const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+
+    const prompt = `
+                Based on the following note, generate the following:
+                1. A bullet-point summary of the key takeaways (–7 points).
+                2. 10 multiple choice questions with its answers.
+
+                Note content:
+                ${content}
+                `;
+
+    const response = await axios.post(
+      API_URL,
+      {
+        contents: [{ parts: [{ text: prompt }] }],
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
+
+    const output = response?.data?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!output) {
+      return res.status(500).json({ message: "No AI output received." });
+    }
+
+    await Note.findByIdAndUpdate(noteId, { quiz: output });
+
+    res.status(200).json({ quizAndSummary: output });
+  } catch (error) {
+    console.error("Generate Quiz error:", error?.response?.data || error.message);
+    res.status(500).json({ message: "Error generating quiz and summary" });
+  }
+};
+
 
 module.exports = {
     createNote,
@@ -133,5 +179,6 @@ module.exports = {
     getNoteById,
     updateNoteById,
     deleteNoteById,
-    summarizeNote
+    summarizeNote,
+    generateQuizAndSummary
 };

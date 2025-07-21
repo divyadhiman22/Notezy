@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from "../store/auth";
+import PopUpAlert from "../components/PopUpAlert";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -10,6 +11,14 @@ const Contact = () => {
     username: '',
     email: '',
     message: '',
+  });
+
+  const [popup, setPopup] = useState({
+    show: false,
+    title: '',
+    message: '',
+    onClose: () => setPopup({ ...popup, show: false }),
+    onConfirm: () => setPopup({ ...popup, show: false }),
   });
 
   useEffect(() => {
@@ -40,15 +49,31 @@ const Contact = () => {
       });
 
       if (response.ok) {
-        alert('Message sent!');
-        setContact({
-          username: '',
-          email: '',
-          message: '',
+        setPopup({
+          show: true,
+          title: "Success",
+          message: "Message sent!",
+          onClose: () => {
+            setPopup({ ...popup, show: false });
+            setContact({ username: '', email: '', message: '' });
+          },
+          onConfirm: () => {
+            setPopup({ ...popup, show: false });
+            setContact({ username: '', email: '', message: '' });
+          }
         });
+      } else {
+        const err = await response.json();
+        throw new Error(err.message || "Message failed to send.");
       }
     } catch (error) {
-      console.log(error);
+      setPopup({
+        show: true,
+        title: "Error",
+        message: error.message || "An error occurred while sending your message.",
+        onClose: () => setPopup({ ...popup, show: false }),
+        onConfirm: () => setPopup({ ...popup, show: false }),
+      });
     }
   };
 
@@ -116,6 +141,15 @@ const Contact = () => {
           />
         </div>
       </div>
+
+      {popup.show && (
+        <PopUpAlert
+          title={popup.title}
+          message={popup.message}
+          onClose={popup.onClose}
+          onConfirm={popup.onConfirm}
+        />
+      )}
     </div>
   );
 };
