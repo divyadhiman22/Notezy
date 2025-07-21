@@ -82,7 +82,7 @@ const Navbar = () => {
               <>
                 <li>
                   <NavLink to="/notes" className={navLinkClass}>
-                    My Notes
+                    Notezy
                   </NavLink>
                 </li>
                 <li className="relative" ref={dropdownRef}>

@@ -65,7 +65,7 @@ const NotesLayout = () => {
   return (
     <div className="min-h-screen bg-[#0a0a23] text-white py-16 px-4 sm:px-6 mt-[5%]">
       <h1 className="text-3xl font-extrabold text-purple-500 text-center mb-10">
-        Welcome to My Notes
+        Welcome to Notezy
       </h1>
 
       <div className="flex flex-col lg:flex-row max-w-7xl mx-auto w-full gap-8">
